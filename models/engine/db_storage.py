@@ -82,9 +82,8 @@ class DBStorage:
 
         all_objs_dict = self.all(cls)
         obj_key = cls.__name__ + '.' + id
-        for key in all_objs_dict.keys():
-            if key == obj_key:
-                return all_objs_dict[obj_key]
+        if obj_key in all_objs_dict:
+            return all_objs_dict[obj_key]
         return None
 
     def count(self, cls=None):
