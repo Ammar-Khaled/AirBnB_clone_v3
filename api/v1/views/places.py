@@ -96,9 +96,6 @@ def places_search():
     if lists is None:
         abort(400, 'Not a JSON')
 
-    if len(lists) == 0:
-        return jsonify([p.to_dict() for p in storage.all(Place).values()])
-
     try:
         states = lists['states']  # list of state ids
     except Exception:
@@ -112,11 +109,14 @@ def places_search():
     except Exception:
         amenities = []
 
+    if len(lists) == 0 or (len(states) == 0 and len(cities) == 0, len(amenities) == 0):
+        return jsonify([p.to_dict() for p in storage.all(Place).values()])
+
     cities_to_search = set()
     for state_id in states:
         state = storage.get(State, state_id)
         if state:
-            cities_to_search.add(state.cities)
+            cities_to_search.add(city for city in state.cities)
     for city_id in cities:
         city = storage.get(City, city_id)
         if city:
