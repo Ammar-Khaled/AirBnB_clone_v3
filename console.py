@@ -60,12 +60,20 @@ class HBNBCommand(cmd.Cmd):
         if len(args) == 0:
             print("** class name missing **")
             return False
-        if args[0] in classes:
-            new_dict = self._key_value_parser(args[1:])
-            instance = classes[args[0]](**new_dict)
-        else:
+        if args[0] not in classes:
             print("** class doesn't exist **")
             return False
+
+        # detect if all required attributes are present
+        cls = classes[args[0]]
+        new_dict = self._key_value_parser(args[1:])
+        req_attrs = cls.getRequiredAttributes()
+        for attr in req_attrs:
+            if attr not in new_dict:
+                print("** missing attribute: {} **".format(attr))
+                return False
+
+        instance = cls(**new_dict)
         print(instance.id)
         instance.save()
 
@@ -159,6 +167,24 @@ class HBNBCommand(cmd.Cmd):
                 print("** instance id missing **")
         else:
             print("** class doesn't exist **")
+
+    def do_classes(self, _):
+        """ Lists all allowed classes """
+        print([c for c in classes])
+
+    def do_attributes(self, arg):
+        """ Lists all required attributes of a class """
+
+        arg = arg.strip()
+        if not arg:
+            print("** class name missing **")
+            return
+        if arg not in classes:
+            print("** class doesn't exist **")
+            return
+
+        req_attrs = classes[arg].getRequiredAttributes()
+        print(req_attrs)
 
 
 if __name__ == '__main__':

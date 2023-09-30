@@ -73,3 +73,19 @@ class BaseModel:
     def delete(self):
         """delete the current instance from the storage"""
         models.storage.delete(self)
+
+    @classmethod
+    def getRequiredAttributes(cls):
+        """Returns a list of required attributes
+
+        Returns: list"""
+        table = getattr(cls, '__table__', None)
+        if table is None:
+            return list(
+                filter(
+                    lambda k: not k.startswith('__') and type(
+                        cls.__dict__.get(k)) in [str, int, float, bool],
+                    cls.__dict__.keys()))
+        return [c.name for c in table.columns if (not c.primary_key
+                                                  and not c.nullable
+                                                  and not c.default)]
