@@ -89,10 +89,11 @@ def update_place_by_id(place_id):
     return jsonify(place.to_dict())
 
 
-@app_views.route('/places_search', methods=['Post'])
+@app_views.route('/places_search', methods=['POST'])
 def places_search():
     """Search for places."""
     lists = request.get_json()
+    print(f"lists: {lists}")
     if lists is None:
         abort(400, 'Not a JSON')
 
@@ -108,28 +109,36 @@ def places_search():
         amenities = lists['amenities']  # list of amenity ids
     except Exception:
         amenities = []
-
-    if len(lists) == 0 or (len(states) == 0 and len(cities) == 0, len(amenities) == 0):
+    print(f"states: {states}")
+    print(f"cities: {cities}")
+    print(f"amenities: {amenities}")
+    if len(lists) == 0 or (len(states) == 0 and len(cities) == 0 and len(amenities) == 0):
         return jsonify([p.to_dict() for p in storage.all(Place).values()])
 
     cities_to_search = set()
     for state_id in states:
         state = storage.get(State, state_id)
         if state:
-            cities_to_search.add(city for city in state.cities)
+            for city in state.cities:
+                cities_to_search.add(city.id)
     for city_id in cities:
-        city = storage.get(City, city_id)
-        if city:
-            cities_to_search.add(city)
+        cities_to_search.add(city_id)
+    print(f"cities_to_search: {cities_to_search}")
 
     places = set()
-    for city in cities_to_search:
-        places.add(city.places)
+    all_places = storage.all(Place).values()
+    for place in all_places:
+        print(f"place: {place}")
+        if place.city_id in cities_to_search:
+            print(f"place.city_id: {place.city_id}")
+            places.add(place)
+
+    print(f"places: {places}")
 
     if amenities:
         for amenity in amenities:
             for place in places:
                 if amenity not in place.amenities:
-                    places.remove(place)
+                    places.pop(place)
 
     return jsonify([p.to_dict() for p in places])
