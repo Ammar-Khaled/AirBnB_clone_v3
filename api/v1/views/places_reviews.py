@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" View module for places reviews endpoint """
+""" View module for the link between places and reviews actions """
 
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
@@ -24,7 +24,7 @@ def get_reviews_by_place_id(place_id):
 def get_review_by_id(review_id):
     """Return a Review object by its id"""
     review = storage.get(Review, review_id)
-    if not review:
+    if review is None:
         abort(404)
     return jsonify(review.to_dict())
 
@@ -33,7 +33,7 @@ def get_review_by_id(review_id):
 def delete_review_by_id(review_id):
     """Delete a Review object by its id"""
     review = storage.get(Review, review_id)
-    if not review:
+    if review is None:
         abort(404)
     storage.delete(review)
     storage.save()
@@ -71,7 +71,7 @@ def create_review(place_id):
 def update_review_by_id(review_id):
     """Update an Review object by its id"""
     review = storage.get(Review, review_id)
-    if not review:
+    if review is None:
         abort(404)
 
     # get attributes from request body
