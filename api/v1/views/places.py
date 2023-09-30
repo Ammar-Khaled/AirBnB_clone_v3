@@ -93,7 +93,6 @@ def update_place_by_id(place_id):
 def places_search():
     """Search for places."""
     lists = request.get_json()
-    print(f"lists: {lists}")
     if lists is None:
         abort(400, 'Not a JSON')
 
@@ -109,9 +108,7 @@ def places_search():
         amenities = lists['amenities']  # list of amenity ids
     except Exception:
         amenities = []
-    print(f"states: {states}")
-    print(f"cities: {cities}")
-    print(f"amenities: {amenities}")
+
     if len(lists) == 0 or (len(states) == 0 and len(cities) == 0 and len(amenities) == 0):
         return jsonify([p.to_dict() for p in storage.all(Place).values()])
 
@@ -123,7 +120,6 @@ def places_search():
                 cities_to_search.add(city.id)
     for city_id in cities:
         cities_to_search.add(city_id)
-    print(f"cities_to_search: {cities_to_search}")
 
     places = set()
     all_places = storage.all(Place).values()
@@ -132,8 +128,6 @@ def places_search():
         if place.city_id in cities_to_search:
             print(f"place.city_id: {place.city_id}")
             places.add(place)
-
-    print(f"places: {places}")
 
     if amenities:
         for amenity in amenities:
