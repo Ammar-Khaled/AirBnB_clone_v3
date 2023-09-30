@@ -30,15 +30,15 @@ def not_found(_):
     return make_response(jsonify(error="Not found"), 404)
 
 
-@app.errorhandler(Exception)
-def error_handler(err):
-    """Handle all kinds of errors."""
-    msg, code = str(err), 500
-
-    if isinstance(err, HTTPException):
-        msg, code = err.description, err.code
-
-    return make_response(jsonify(error=msg), code)
+# @app.errorhandler(Exception)
+# def error_handler(err):
+#     """Handle all kinds of errors."""
+#     msg, code = str(err), 500
+#
+#     if isinstance(err, HTTPException):
+#         msg, code = err.description, err.code
+#
+#     return make_response(jsonify(error=msg), code)
 
 
 if __name__ == "__main__":
