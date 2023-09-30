@@ -8,6 +8,8 @@ from models import storage
 from api.v1.views import app_views
 from os import getenv
 
+from werkzeug.exceptions import HTTPException
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -26,6 +28,17 @@ def close_storage(_):
 def not_found(_):
     """Handle the 404 not found error."""
     return make_response(jsonify(error="Not found"), 404)
+
+
+@app.errorhandler(Exception)
+def error_handler(err):
+    """Handle all kinds of errors."""
+    msg, code = str(err), 500
+
+    if isinstance(err, HTTPException):
+        msg, code = err.description, err.code
+
+    return make_response(jsonify(error=msg), code)
 
 
 if __name__ == "__main__":
