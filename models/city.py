@@ -6,6 +6,7 @@ from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
+from models.place import Place
 
 
 class City(BaseModel, Base):
@@ -18,6 +19,15 @@ class City(BaseModel, Base):
     else:
         state_id = ""
         name = ""
+        @property
+        def places(self):
+            """getter for list of Place instances related to the city."""
+            place_list = []
+            all_places = models.storage.all(Place)
+            for place in all_places.values():
+                if place.city_id == self.id:
+                    place_list.append(place)
+            return place_list
 
     def __init__(self, *args, **kwargs):
         """initializes city"""
