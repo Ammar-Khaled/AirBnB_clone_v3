@@ -8,7 +8,7 @@ from models.place import Place
 from models.city import City
 from models.user import User
 from models.state import State
-from models.amenty import Amenity
+from models.amenity import Amenity
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'])
@@ -110,7 +110,8 @@ def places_search():
     except Exception:
         amenities = []
 
-    if len(lists) == 0 or (len(states) == 0 and len(cities) == 0 and len(amenities) == 0):
+    if len(lists) == 0 or (len(states) == 0 and len(cities) == 0 and
+       len(amenities) == 0):
         return jsonify([p.to_dict() for p in storage.all(Place).values()])
 
     cities_to_search = set()
@@ -122,20 +123,22 @@ def places_search():
     for city_id in cities:
         cities_to_search.add(city_id)
 
-    places = set()
+    places = []
     all_places = storage.all(Place).values()
     for place in all_places:
-        print(f"place: {place}")
         if place.city_id in cities_to_search:
-            print(f"place.city_id: {place.city_id}")
-            places.add(place)
+            places.append(place)
+
+    # if not states and not cities => filter from all places:
+    if not places:
+        places = all_places
 
     if amenities:
         for amenity_id in amenities:
-            amenity = storage.get(Amenity, amenity_id)
-            if amenity:
-                for place in places:
-                    if amenity not in place.amenities:
-                        places.remove(place)
+            for place in places:
+                # get the place's amenities_ids
+                place_amenities_ids = [a.id for a in place.amenities]
+                if amenity_id not in place_amenities_ids:
+                    places.remove(place)
 
     return jsonify([p.to_dict() for p in places])
