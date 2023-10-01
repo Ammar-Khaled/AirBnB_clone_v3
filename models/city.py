@@ -19,6 +19,15 @@ class City(BaseModel, Base):
     else:
         state_id = ""
         name = ""
+        @property
+        def places(self):
+            """Get the list of Place instances related to the city."""
+            place_list = []
+            all_places = models.storage.all(Place)
+            for place in all_places.values():
+                if place.city_id == self.id:
+                    place_list.append(place)
+            return place_list
 
     def __init__(self, *args, **kwargs):
         """initializes city"""
