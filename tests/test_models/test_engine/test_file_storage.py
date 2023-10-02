@@ -126,8 +126,8 @@ class TestFileStorage(unittest.TestCase):
     def test_get_None_cls(self):
         """Test that get method properly gets the object from storage."""
         storage = FileStorage()
-        a_state_id = list(storage.all(State).values())[0].id
-        self.assertEqual(storage.get(None, id), None)
+        state = State(name="New York")
+        self.assertEqual(storage.get(None, state.id), None)
 
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get_None_id(self):
