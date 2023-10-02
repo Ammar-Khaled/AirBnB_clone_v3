@@ -49,12 +49,8 @@ class BaseModel:
 
     def __str__(self):
         """String representation of the BaseModel class"""
-        cls = type(self).__name__
-        data = self.__dict__.copy()
-        if "_User__password" in data:
-            data["password"] = data["_User__password"]
-            del data["_User__password"]
-        return "[{:s}] ({:s}) {}".format(cls, self.id, data)
+        return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.id,
+                                         self.__dict__)
 
     def save(self):
         """updates the attribute 'updated_at' with the current datetime"""
@@ -62,7 +58,7 @@ class BaseModel:
         models.storage.new(self)
         models.storage.save()
 
-    def to_dict(self, isSaving=False):
+    def to_dict(self):
         """returns a dictionary containing all keys/values of the instance"""
         new_dict = self.__dict__.copy()
         if "created_at" in new_dict:
@@ -72,8 +68,6 @@ class BaseModel:
         new_dict["__class__"] = self.__class__.__name__
         if "_sa_instance_state" in new_dict:
             del new_dict["_sa_instance_state"]
-        if not isSaving and "_User__password" in new_dict:
-            del new_dict["_User__password"]
         return new_dict
 
     def delete(self):
@@ -89,9 +83,8 @@ class BaseModel:
         if table is None:
             return list(
                 filter(
-                    lambda k: not k.startswith(
-                        '_') and type(cls.__dict__.get(k))
-                    in [str, int, float, bool, property],
+                    lambda k: not k.startswith('__') and type(
+                        cls.__dict__.get(k)) in [str, int, float, bool],
                     cls.__dict__.keys()))
         return [c.name for c in table.columns
                 if (not c.primary_key and not c.nullable and not c.default)]
