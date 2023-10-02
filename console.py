@@ -187,8 +187,11 @@ class HBNBCommand(cmd.Cmd):
         print(req_attrs)
 
     def do_reload(self, _):
-        """Reloads and updates in memory database"""
-        models.storage.close()
+        """Reloads and updates in memory database
+        only while using JSON file storage"""
+        if models.storage_t != "db":
+            models.storage.clear()
+            models.storage.reload()
 
 
 if __name__ == '__main__':
