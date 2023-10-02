@@ -71,7 +71,7 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             """Get a list of Amenity instances for the current place."""
-            return [models.storage.get(Amenity, i) for i in self.amenity_ids]
+            return [models.storage.get(Amenity, amenity_id) for amenity_id in self.amenity_ids]
 
         @amenities.setter
         def amenities(self, new_amenity):
