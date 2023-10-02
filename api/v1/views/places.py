@@ -142,4 +142,3 @@ def places_search():
                     places.remove(place)
 
     return jsonify([p.to_dict() for p in places])
-
