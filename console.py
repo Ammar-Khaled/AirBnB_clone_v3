@@ -186,6 +186,10 @@ class HBNBCommand(cmd.Cmd):
         req_attrs = classes[arg].getRequiredAttributes()
         print(req_attrs)
 
+    def do_reload(self, _):
+        """Reloads and updates in memory database"""
+        models.storage.close()
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

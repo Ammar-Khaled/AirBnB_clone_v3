@@ -48,8 +48,13 @@ class FileStorage:
         with open(self.__file_path, 'w') as f:
             json.dump(json_objects, f)
 
+    def clear(self):
+        """Clear all data in memory"""
+        self.__objects = {}
+
     def reload(self):
         """deserializes the JSON file to __objects"""
+        self.clear()
         try:
             with open(self.__file_path, 'r') as f:
                 jo = json.load(f)
