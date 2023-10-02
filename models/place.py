@@ -6,6 +6,8 @@ from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
+from models.amenity import Amenity
+
 
 if models.storage_t == 'db':
     place_amenity = Table('place_amenity', Base.metadata,
@@ -48,11 +50,11 @@ class Place(BaseModel, Base):
         price_by_night = 0
         latitude = 0.0
         longitude = 0.0
-        amenity_ids = []
 
     def __init__(self, *args, **kwargs):
         """initializes Place"""
         super().__init__(*args, **kwargs)
+        self.amenity_ids = []
 
     if models.storage_t != 'db':
         @property
@@ -68,11 +70,12 @@ class Place(BaseModel, Base):
 
         @property
         def amenities(self):
-            """getter attribute returns the list of Amenity instances"""
-            from models.amenity import Amenity
-            amenity_list = []
-            all_amenities = models.storage.all(Amenity)
-            for amenity in all_amenities.values():
-                if amenity.place_id == self.id:
-                    amenity_list.append(amenity)
-            return amenity_list
+            """Get a list of Amenity instances for the current place."""
+            return [models.storage.get(Amenity, amenity_id) for amenity_id in self.amenity_ids]
+
+        @amenities.setter
+        def amenities(self, new_amenity):
+            """append new Amenity's id to the attribute amenity_ids."""
+            if type(new_amenity) == Amenity:
+                if new_amenity.id not in self.amenity_ids:
+                    self.amenity_ids.append(new_amenity.id)
