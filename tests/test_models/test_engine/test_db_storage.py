@@ -96,6 +96,31 @@ class TestDBStorage(unittest.TestCase):
         self.assertEqual(storage.get(State, state.id).id, state.id)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get_None_cls(self):
+        """Test that get method properly gets the object from storage."""
+        storage = DBStorage()
+        state = State(name="New York")
+        self.assertEqual(storage.get(None, state.id), None)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get_None_id(self):
+        """Test that get method properly gets the object from storage."""
+        storage = DBStorage()
+        self.assertEqual(storage.get(State, None), None)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get_not_found(self):
+        """Test that get method properly gets the object from storage."""
+        storage = DBStorage()
+        self.assertEqual(storage.get(State, '0'), None)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get_undefined_class(self):
+        """Test that get method properly gets the object from storage."""
+        storage = DBStorage()
+        self.assertEqual(storage.get(FileStorage, '0'), None)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count_state(self):
         """Test count method of storage on State."""
         storage = DBStorage()
