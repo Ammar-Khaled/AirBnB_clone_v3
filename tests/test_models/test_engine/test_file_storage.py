@@ -146,3 +146,11 @@ class TestFileStorage(unittest.TestCase):
         """Test that get method properly gets the object from storage."""
         storage = FileStorage()
         self.assertEqual(storage.get(FileStorage, '0'), None)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count_state(self):
+        """Test count method of storage on State."""
+        storage = FileStorage()
+        state = State(name="California")
+        state.save()
+        self.assertNotEqual(storage.count(State), 0)
